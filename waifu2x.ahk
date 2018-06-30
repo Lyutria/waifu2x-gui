@@ -7,7 +7,7 @@ SetWorkingDir %A_ScriptDir%
 #Include E:\Scripts\ahk\library.ahk
 
 SETTINGSSOURCE := A_ScriptDir . "\" . A_ScriptName . ".ini"
-IniRead, COMPILERSOURCE, %SETTINGSSOURCE%, settings, compiler, C:\Programs\waifu2x\waifu2x-converter-cpp.exe
+IniRead, COMPILERSOURCE, %SETTINGSSOURCE%, settings, compiler,C:\
 IniRead, NoiseValue, %SETTINGSSOURCE%, settings, noise, 0
 IniRead, ScaleValue, %SETTINGSSOURCE%, settings, scale, 2
 IniRead, DEFAULTEXT, %SETTINGSSOURCE%, settings, extension, _x<scale>_n<noise>
@@ -16,6 +16,16 @@ SOURCEFILES =
 OUTPUT      =
 FILEMODE   := 1
 WWIDTH     := 450
+
+If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
+	MsgBox,, Waifu2x, No compiler has been selected yet, please select the waifu2x-converter-cpp.exe
+	Gosub, SelectCompiler
+}
+
+If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
+	MsgBox,, Waifu2x, No compiler was selected, the program will exit.
+	ExitApp
+}
 
 Gui +Resize
 	Gui Font, s8, Segoe UI
@@ -256,8 +266,9 @@ Process:
 	ScaleValue := EditScale
 	NoiseValue := EditNoise
 
-	if (FileExist(COMPILERSOURCE) == 0) {
+	If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
 		MsgBox,,Error, No compiler selected. Please select one under settings.
+		return
 	}
 
 	if (FILEMODE == 1) {
