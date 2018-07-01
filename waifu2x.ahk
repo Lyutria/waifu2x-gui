@@ -18,7 +18,7 @@ IniRead, NoiseValue, %SETTINGSSOURCE%, settings, noise, 0
 IniRead, ScaleValue, %SETTINGSSOURCE%, settings, scale, 2
 IniRead, DEFAULTEXT, %SETTINGSSOURCE%, settings, extension, _x<scale>_n<noise>
 IniRead, COMMANDS,   %SETTINGSSOURCE%, settings, commands, %A_Space%
-VERSION     := "1.0"
+VERSION     := "1.1"
 SOURCEFILES  =
 OUTPUT       =
 FILEMODE    := 1
@@ -56,15 +56,15 @@ Gui, +Resize
   BgLight := "FAFAFA"
   BgDark  := "F0F0F0"
 
+  WHEIGHT    := 245
+  WWIDTH     := 500
   LabelWidth := 120
   LabelStyle := "section +0x200 BackgroundTrans"
-  LineSp     := 10
-  eSeparator := "x0 y+10 w500 h2 0x10"
-  eSpacing   := 5
-  WHEIGHT    := 210
-  WWIDTH     := 487
+  LineSp     := 15
+  eSpacing   := 10
+  eSeparator := "x0 y+" . LineSp . " w" . WWIDTH+10 . "h2 0x10"
 
-  Gui, Add, Progress, x0 y0 w%LabelWidth% h168 Background%BgLight%, 0
+  Gui, Add, Progress, x0 y0 w%LabelWidth% h192 Background%BgLight%, 0
   Gui, Color, %BgDark%
 
   Gui, Add, Text,   xm           ym+%LineSp% w%LabelWidth% %LabelStyle%, Source
@@ -76,25 +76,25 @@ Gui, +Resize
   Gui, Add, Edit,   x+%eSpacing% ys-4        w250          hWndhEdit2 vEditFileSave,
 
   Gui, Add, Text, xm           y+%LineSp%  w%LabelWidth% %LabelStyle%    vLabelFileExt +Disabled, Output Name Ext.
-  Gui, Add, Edit, x+%eSpacing% ys-5        w200          hWndhEdit3      vEditFileExt  gEditFileExtChange +Disabled
+  Gui, Add, Edit, x+%eSpacing% ys-5        w195          hWndhEdit3      vEditFileExt  gEditFileExtChange +Disabled
   Gui, Add, Text, x+%eSpacing% ys          w40           hWndhStatic13   vLabelPreview +Disabled, Preview:
   Gui, Add, Edit, x+%eSpacing% ys-5        w92           hWndhEdit4      vEditPreview  +Disabled +ReadOnly,
 
   Gui, Add, Text, %eSeparator% hWndhStatic10
 
-  Gui, Add, Text,   xm           y+10 w%LabelWidth%  %LabelStyle%, Noise Reduction
-  Gui, Add, Slider, x+%eSpacing% ys-5 w298           h20 hWndhmsctls_trackbar321 vSliderNoise gSliderNoiseChange +Tooltip TickInterval1 Range0-3, 0
-  Gui, Add, Edit,   x+%eSpacing% ys-5 w40            hWndhEdit5 vEditNoise +Disabled +ReadOnly Center, 0
+  Gui, Add, Text,   xm           yp+%LineSp%  w%LabelWidth%  %LabelStyle%, Noise Reduction
+  Gui, Add, Slider, x+%eSpacing% ys-5         w298           h20 hWndhmsctls_trackbar321 vSliderNoise gSliderNoiseChange +Tooltip TickInterval1 Range0-3, 0
+  Gui, Add, Edit,   x+%eSpacing% ys-5         w40            hWndhEdit5 vEditNoise +Disabled +ReadOnly Center, 0
 
   Gui, Add, Text,   xm           y+15 w%LabelWidth% %LabelStyle%, Image Scaling
-  Gui, Add, Edit,   x+%eSpacing% ys-5 w342          hWndhEdit6 vEditScale gEditScaleChange, 2
+  Gui, Add, Edit,   x+%eSpacing% ys-5 w347          hWndhEdit6 vEditScale gEditScaleChange, 2
   Gui, Add, UpDown, x+%eSpacing% ys-5 w10           hWndhmsctls_updown321 vCounterScale +0x80, 2
 
   Gui, Add, Text, %eSeparator% hWndhStatic16
 
-  Gui, Add, Button,   xm           yp+10 w100 section gProcess, STA&RT
-  Gui, Add, Progress, x+24         ys+1  w238 h21 hWndhmsctls_progress321 vProgressBar -Smooth Range0-1, 0
-  Gui, Add, Button,   x+%eSpacing% ys    w100 hWndhButton4 vButtonResult gOpenResult +Disabled, Open Result
+  Gui, Add, Button,   xm           yp+%LineSp% w100 section gProcess, STA&RT
+  Gui, Add, Progress, x+24         ys+1        w244 h21 hWndhmsctls_progress321 vProgressBar -Smooth Range0-1, 0
+  Gui, Add, Button,   x+%eSpacing% ys          w100 hWndhButton4 vButtonResult gOpenResult +Disabled, Open Result
 
   Gui, Show, w%WWIDTH% h%WHEIGHT%, Waifu2x
   Gui, +MinSize%WWIDTH%x%WHEIGHT% +MaxSize9999x%WHEIGHT%
