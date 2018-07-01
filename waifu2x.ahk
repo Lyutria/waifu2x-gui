@@ -18,7 +18,11 @@ IniRead, NoiseValue, %SETTINGSSOURCE%, settings, noise, 0
 IniRead, ScaleValue, %SETTINGSSOURCE%, settings, scale, 2
 IniRead, DEFAULTEXT, %SETTINGSSOURCE%, settings, extension, _x<scale>_n<noise>
 IniRead, COMMANDS,   %SETTINGSSOURCE%, settings, commands, %A_Space%
+<<<<<<< HEAD
 VERSION     := "1.0.1 dev"
+=======
+VERSION     := "1.1"
+>>>>>>> 8d765e2889a9cf81d33bb11a23ac0407e8065bf2
 SOURCEFILES  =
 OUTPUT       =
 FILEMODE    := 1
