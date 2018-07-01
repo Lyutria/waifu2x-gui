@@ -11,7 +11,7 @@ Run the AutoHotKey2exe compiler:
 `"C:\Program Files\AutoHotkey\Compiler\Ahk2Exe.exe" /in waifu2x.ahk /out waifu2x.exe /icon compile.ico`
 
 # Usage
-The GUI is fairly full featured. On first run select `waifu2x-converter-cpp.exe` that you downloaded.
+On first run select `waifu2x-converter-cpp.exe` that you downloaded.
 
 Use the *Open* button to select one or multiple files (in the same folder) or drag and drop onto the window.
 
