@@ -3,7 +3,7 @@
 #SingleInstance off
 SetWorkingDir %A_ScriptDir%
 
-#Include %A_ScriptDir%\include\AutoXYWH.ahk
+#Include %A_ScriptDir%\lib\AutoXYWH.ahk
 ; Create a default icon
 if ( Not A_IconFile and Not A_IsCompiled ) {
   IconPath = %A_ScriptDir%\compile.ico|%A_ScriptDir%\ahk\compile.ico|E:\Scripts\ahk\compile.ico
@@ -42,6 +42,8 @@ Gui, +Resize
   Menu, SettingsMenu, Add, Select &Compiler, SelectCompiler
   Menu, SettingsMenu, Add, Command &Line Options, SelectCommand
   Menu, SettingsMenu, Add, Default &Extension, SelectExtension
+  Menu, SettingsMenu, Add
+  Menu, SettingsMenu, Add, Open INI file, OpenSettings
   Menu, SettingsMenu, Add
   Menu, SettingsMenu, Add, E&xit`tEsc, MenuHandler
   Menu, MenuBar, Add, Sett&ings, :SettingsMenu
@@ -416,6 +418,7 @@ SelectExtension:
   IniWrite, %DEFAULTEXT%, %SETTINGSSOURCE%, settings, extension
 return
 
+
 SelectCommand:
   InputBox, cmd, Enter Command Line Options, Enter any extra command line options you would like to run when executing:,,,150,,,,,%COMMANDS%
   if ( ErrorLevel ) {
@@ -424,6 +427,12 @@ SelectCommand:
   COMMANDS := cmd
   IniWrite, %COMMANDS%, %SETTINGSSOURCE%, settings, commands
 return
+
+
+OpenSettings:
+  Run, %SETTINGSSOURCE%
+return
+
 
 SliderNoiseChange:
   GuiControl, Text, EditNoise, %SliderNoise%
