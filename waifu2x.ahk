@@ -78,7 +78,7 @@ Gui, +Resize
   Gui, Add, Text, %eSeparator% hWndhStatic10
 
   Gui, Add, Text,   xm           y+10 w%LabelWidth%  %LabelStyle%, Noise Reduction
-  Gui, Add, Slider, x+%eSpacing% ys-5 w298           hWndhmsctls_trackbar321 vSliderNoise gSliderNoiseChange +Tooltip TickInterval1 Range0-3, 0
+  Gui, Add, Slider, x+%eSpacing% ys-5 w298           h20 hWndhmsctls_trackbar321 vSliderNoise gSliderNoiseChange +Tooltip TickInterval1 Range0-3, 0
   Gui, Add, Edit,   x+%eSpacing% ys-5 w40            hWndhEdit5 vEditNoise +Disabled +ReadOnly Center, 0
 
   Gui, Add, Text,   xm           y+15 w%LabelWidth% %LabelStyle%, Image Scaling
@@ -151,9 +151,19 @@ InputFileList(ByRef OutputVar, InputFiles, Extension) {
 
   else {
     OutputVar := InputFiles
-    InputFilePath := StrReplace(InputFiles, "`n", ", ")
-    GuiControl, Text, EditFileOpen,   %InputFilePath%
-    GuiControl, Text, EditFileSave,   %OutputFilePath%
+    OutputPath :=
+    InputFileNames :=
+    Loop, Parse, InputFiles, `n
+    {
+      if (A_Index == 1 ) {
+        OutputPath := A_LoopField
+      }
+      else {
+        InputFileNames .= A_LoopField . ", "
+      }
+    }
+    GuiControl, Text, EditFileOpen,   %InputFileNames%
+    GuiControl, Text, EditFileSave,   %OutputPath%
     GuiControl, Text, EditFileExt,    %Extension%
     GuiControl, Text, LabelFileSave,  Output Path
     GuiControl, Text, ButtonFileSave, Save To...
@@ -176,16 +186,16 @@ InputSingle(ByRef OutputVar, InputFile, Extension) {
 }
 
 
-WaifuSingle(InputFile, OutFile, InputNoise := 0, InputScale := 2, Compiler := "") {
+WaifuSingle(InputFile, OutFile, InputNoise := 0, InputScale := 2, Compiler := "", Options := "") {
   GuiControl, Disable, ButtonResult
   GuiControl, Text, ButtonResult, Working...
-  if (FileExist(InputFile)) {
+  if (FileExist(InputFile) and FileExist(InputFile) != "D") {
     SplitPath, InputFile, OutFileName, OutFileDir, OutFileExt, OutFileName
 
     GuiControl, +Range0-2, ProgressBar
     GuiControl,, ProgressBar, 1
 
-    Success := Waifu(InputFile, OutFile, InputNoise, InputScale, Compiler)
+    Success := Waifu(InputFile, OutFile, InputNoise, InputScale, Compiler, Options)
 
     if (Success) {
       GuiControl, Enable, ButtonResult
@@ -207,7 +217,7 @@ WaifuSingle(InputFile, OutFile, InputNoise := 0, InputScale := 2, Compiler := ""
 }
 
 
-WaifuList(InputList, Extension := "_scaled", InputNoise := 0, InputScale := 2, Compiler := "") {
+WaifuList(InputList, OutputPath, Extension := "_scaled", InputNoise := 0, InputScale := 2, Compiler := "", Options := "") {
   SourceFileList := StrSplit(InputList, "`n")
   FileTotal := SourceFileList.Length()
   GuiControl, Disable, ButtonResult
@@ -216,22 +226,35 @@ WaifuList(InputList, Extension := "_scaled", InputNoise := 0, InputScale := 2, C
   GuiControl, +Range0-%FileTotal%, ProgressBar
   GuiControl,, ProgressBar, 1
 
+  if (SubStr(OutputPath, 0, 1) == "\") {
+    OutputPath := SubStr(OutputPath, 1, StrLen(OutputPath)-1)
+  }
+
+  if (FileExist(OutputPath) != "D") {
+    MsgBox,, No Output Directory, Ouput directory does not exist:`n%OutputPath%
+    GuiControl, Disable, ButtonResult
+    GuiControl, Text, ButtonResult, Error
+    GuiControl,, ProgressBar, 0
+    Gui, Flash
+    return
+  }
+
   for index, Fi in SourceFileList {
     if (index > 1) {
       IndexOutput := index - 1
       InputFile   := SourceFileList[1] . "\" . Fi
       SplitPath, InputFile, OutFileName, OutDir, OutExt, OutNameNoExt
-      OutFile     := SourceFileList[1]  . "\" . OutNameNoExt . Extension . ".png"
+      OutFile     := OutputPath  . "\" . OutNameNoExt . Extension . ".png"
 
       GuiControl,, ProgressBar, %IndexOutput%
-      Success := Waifu(InputFile, OutFile, InputNoise, InputScale, Compiler)
+      Success := Waifu(InputFile, OutFile, InputNoise, InputScale, Compiler, Options)
 
       if (Success == 0) {
         GuiControl, Disable, ButtonResult
         GuiControl, Text, ButtonResult, Error
         GuiControl,, ProgressBar, 0
         Gui, Flash
-        Exit
+        return
       }
     }
   }
@@ -243,25 +266,25 @@ WaifuList(InputList, Extension := "_scaled", InputNoise := 0, InputScale := 2, C
 }
 
 
-Waifu(InputFile, OutFile, InputNoise := 0, InputScale := 2, Compiler := "") {
+Waifu(InputFile, OutFile, Noise := 0, Scale := 2, Compiler := "", Options := "") {
   SplitPath, Compiler, EXE, DIR
   SetWorkingDir, %DIR%
 
-  InputFile := StrReplace(InputFile, "<scale>", InputScale)
-  InputFile := StrReplace(InputFile, "<noise>", InputNoise)
-  OutFile := StrReplace(OutFile, "<scale>", InputScale)
-  OutFile := StrReplace(OutFile, "<noise>", InputNoise)
+  InputFile := StrReplace(InputFile, "<scale>", Scale)
+  InputFile := StrReplace(InputFile, "<noise>", Noise)
+  OutFile := StrReplace(OutFile, "<scale>", Scale)
+  OutFile := StrReplace(OutFile, "<noise>", Noise)
   SplitPath, OutFile, OutFileName, OutDir, OutExt, OutNameNoExt
 
-  if (FileExist(InputFile) == 0) {
+  if (FileExist(InputFile) == "" or FileExist(InputFile) == "D") {
     return 0
   }
 
-  if (InputNoise == 0) {
-    RunWait, "%EXE%" --input "%InputFile%" --output "%OutFile%" --scale_ratio %InputScale%,,Hide
+  if (Noise == 0) {
+    RunWait, "%EXE%" %Options% --input "%InputFile%" --output "%OutFile%" --scale_ratio %Scale%,,Hide
   }
   else {
-    RunWait, "%EXE%" --input "%InputFile%" --output "%OutFile%" --scale_ratio %InputScale% --noise_level %InputNoise%,,Hide
+    RunWait, "%EXE%" %Options% --input "%InputFile%" --output "%OutFile%" --scale_ratio %Scale% --noise_level %Noise%,,Hide
   }
 
   SetWorkingDir, %A_ScriptDir%
@@ -307,13 +330,13 @@ Process:
     }
 
     OUTPUT := OutFilePath
-    WaifuSingle(EditFileOpen, OutFilePath, NoiseValue, ScaleValue, COMPILERSOURCE)
+    WaifuSingle(EditFileOpen, OutFilePath, NoiseValue, ScaleValue, COMPILERSOURCE, COMMANDS)
   }
 
   if (FILEMODE == 2) {
     OutDir := StrSplit(SOURCEFILES, "`n")
     OUTPUT := OutDir[1]
-    WaifuList(SOURCEFILES, EditFileExt, NoiseValue, ScaleValue, COMPILERSOURCE)
+    WaifuList(SOURCEFILES, EditFileSave ,EditFileExt, NoiseValue, ScaleValue, COMPILERSOURCE, COMMANDS)
   }
 
   OUTPUT := StrReplace(OUTPUT, "<scale>", ScaleValue)
@@ -347,16 +370,25 @@ return
 
 
 SaveAs:
-  FileSelectFile, ExportFile, S3,, Save Result As..., PNG Files (*.png)
-  if (FileExist(ExportFile)) {
-    MsgBox, 4, File Exists, The File `n %ExportFile% `n already exists, do you want to overwrite it?
-    IfMsgBox, No
+  if (FILEMODE == 1) {
+    FileSelectFile, ExportFile, S3,, Save Result As..., PNG Files (*.png)
+    if (FileExist(ExportFile)) {
+      MsgBox, 4, File Exists, The File `n %ExportFile% `n already exists, do you want to overwrite it?
+      IfMsgBox, No
+        return
+    }
+    if (InStr(ExportFile, ".png") == 0) {
+      ExportFile .= ".png"
+    }
+    Guicontrol, Text, EditFileSave, %ExportFile%
+  }
+  if (FILEMODE == 2) {
+    FileSelectFolder, ExportFolder, *%EditFileSave%, 3, Choose Output Folder
+    if (ErrorLevel) {
       return
+    }
+    Guicontrol, Text, EditFileSave, %ExportFolder%
   }
-  if (InStr(ExportFile, ".png") == 0) {
-    ExportFile .= ".png"
-  }
-  Guicontrol, Text, EditFileSave, %ExportFile%
 return
 
 
@@ -367,6 +399,9 @@ return
 
 SelectCompiler:
   FileSelectFile, InputEXE, 1, %COMPILERSOURCE%, Select WAIFU2X Compiler, Executables (*.exe)
+  if ( ErrorLevel ) {
+    return
+  }
   COMPILERSOURCE := InputEXE
   IniWrite, %COMPILERSOURCE%, %SETTINGSSOURCE%, settings, compiler
 return
@@ -382,7 +417,7 @@ SelectExtension:
 return
 
 SelectCommand:
-  InputBox, cmd, Enter Commands, Enter any extra command line options you would like to run when executing:,,,150,,,,,%COMMANDS%
+  InputBox, cmd, Enter Command Line Options, Enter any extra command line options you would like to run when executing:,,,150,,,,,%COMMANDS%
   if ( ErrorLevel ) {
     return
   }
