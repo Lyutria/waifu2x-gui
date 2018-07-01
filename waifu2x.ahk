@@ -6,13 +6,9 @@ SetWorkingDir %A_ScriptDir%
 #Include %A_ScriptDir%\lib\AutoXYWH.ahk
 ; Create a default icon
 if ( Not A_IconFile and Not A_IsCompiled ) {
-  IconPath = %A_ScriptDir%\compile.ico|%A_ScriptDir%\ahk\compile.ico|E:\Scripts\ahk\compile.ico
-  Loop, Parse, IconPath, |
-  {
-    If ( FileExist(A_LoopField) ) {
-      Menu, Tray, Icon, %A_LoopField%
-      break
-    }
+  IconPath = %A_ScriptDir%\compile.ico
+  If ( FileExist(IconPath) ) {
+    Menu, Tray, Icon, %IconPath%
   }
 }
 
@@ -22,14 +18,21 @@ IniRead, NoiseValue, %SETTINGSSOURCE%, settings, noise, 0
 IniRead, ScaleValue, %SETTINGSSOURCE%, settings, scale, 2
 IniRead, DEFAULTEXT, %SETTINGSSOURCE%, settings, extension, _x<scale>_n<noise>
 IniRead, COMMANDS,   %SETTINGSSOURCE%, settings, commands, %A_Space%
-VERSION     := "0.2"
+VERSION     := "1.0"
 SOURCEFILES  =
 OUTPUT       =
 FILEMODE    := 1
 
 If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
-  MsgBox,, Waifu2x, No compiler has been selected yet, please select the waifu2x-converter-cpp.exe
-  Gosub, SelectCompiler
+  ; Check if there's a local directory for compiled versions
+  if (FileExist(A_ScriptDir . "\waifu2x-converter-cpp\waifu2x-converter-cpp.exe")) {
+    COMPILERSOURCE := A_ScriptDir . "\waifu2x-converter-cpp\waifu2x-converter-cpp.exe"
+    IniWrite, %COMPILERSOURCE%, %SETTINGSSOURCE%, settings, compiler
+  }
+  else {
+    MsgBox,, Waifu2x, No compiler has been selected yet, please select the waifu2x-converter-cpp.exe
+    Gosub, SelectCompiler
+  }
 }
 
 If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
