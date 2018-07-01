@@ -17,11 +17,11 @@ Use the *Open* button to select one or multiple files (in the same folder) or dr
 
 * If you selected a single file, you can specify a new file to save to (only converts to **.png**), or a base
 output name (which will save in the same folder with the new name)
-* If you selected multiple files, you can specify an extenstion to add to the filename of each converted image (`"img.jpg" + ext "_scaled" = "img_scaled.png"`)
-
-The GUI does not currently support selecting an output folder for multiple files (will always output to the source folder), on TODO.
+* If you selected multiple files, you can specify an output directory (it must exist) and you can specify an extens-ion to add to the filename of each converted image (`"img.jpg" + ext "_scaled" = "img_scaled.png"`)
 
 Both methods support placeholders `<scale>` and `<noise>` which will be replaced by the current scaling and noise levels.
 
 # Command Line
 You can pass a single or list of files to a compiled version of the GUI to open it. If you'd like processing or control over it I would recommend using the command line options on [waifu2x-cpp-converter](https://github.com/DeadSix27/waifu2x-converter-cpp).
+
+If you have command line options you need to apply to it, you can use the option in the _Settings_ menu to write extra options for each run.
