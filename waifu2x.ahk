@@ -3,8 +3,18 @@
 #SingleInstance off
 SetWorkingDir %A_ScriptDir%
 
-#Include E:\Scripts\ahk\AutoXYWH.ahk
-#Include E:\Scripts\ahk\library.ahk
+#Include %A_ScriptDir%\include\AutoXYWH.ahk
+; Create a default icon
+if ( Not A_IconFile and Not A_IsCompiled ) {
+	IconPath = %A_ScriptDir%\compile.ico|%A_ScriptDir%\ahk\compile.ico|E:\Scripts\ahk\compile.ico
+	Loop, Parse, IconPath, |
+	{
+		If ( FileExist(A_LoopField) ) {
+			Menu, Tray, Icon, %A_LoopField%
+			break
+		}
+	}
+}
 
 SETTINGSSOURCE := A_ScriptDir . "\" . A_ScriptName . ".ini"
 IniRead, COMPILERSOURCE, %SETTINGSSOURCE%, settings, compiler,C:\
