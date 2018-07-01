@@ -21,11 +21,11 @@ IniRead, COMPILERSOURCE, %SETTINGSSOURCE%, settings, compiler,C:\
 IniRead, NoiseValue, %SETTINGSSOURCE%, settings, noise, 0
 IniRead, ScaleValue, %SETTINGSSOURCE%, settings, scale, 2
 IniRead, DEFAULTEXT, %SETTINGSSOURCE%, settings, extension, _x<scale>_n<noise>
-VERSION    := "0.2"
-SOURCEFILES =
-OUTPUT      =
-FILEMODE   := 1
-WWIDTH     := 450
+IniRead, COMMANDS,   %SETTINGSSOURCE%, settings, commands, %A_Space%
+VERSION     := "0.2"
+SOURCEFILES  =
+OUTPUT       =
+FILEMODE    := 1
 
 If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
   MsgBox,, Waifu2x, No compiler has been selected yet, please select the waifu2x-converter-cpp.exe
@@ -40,7 +40,7 @@ If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="
 Gui, +Resize
   Gui, Font, s8, Segoe UI
   Menu, SettingsMenu, Add, Select &Compiler, SelectCompiler
-  Menu, SettingsMenu, Add, Command &Line Options, SelectExtension
+  Menu, SettingsMenu, Add, Command &Line Options, SelectCommand
   Menu, SettingsMenu, Add, Default &Extension, SelectExtension
   Menu, SettingsMenu, Add
   Menu, SettingsMenu, Add, E&xit`tEsc, MenuHandler
@@ -48,44 +48,53 @@ Gui, +Resize
   Menu, MenuBar, Add, v%VERSION%, DoNothing, Right
   Gui, Menu, MenuBar
 
-  LabelWidth := 95
+  BgLight := "FAFAFA"
+  BgDark  := "F0F0F0"
+
+  LabelWidth := 120
   LabelStyle := "section +0x200 BackgroundTrans"
-  eSeparator := "xm y+10 w445 h2 0x10"
+  LineSp     := 10
+  eSeparator := "x0 y+10 w500 h2 0x10"
   eSpacing   := 5
+  WHEIGHT    := 210
+  WWIDTH     := 487
 
-  Gui, Add, Text,   xm           y+10 w%LabelWidth% %LabelStyle%, Source:
-  Gui, Add, Button, x+%eSpacing% ys-5 w90 					gOpen, &Open
-  Gui, Add, Edit,   x+%eSpacing% ys-4 w250 					hWndhEdit1 vEditFileOpen,
+  Gui, Add, Progress, x0 y0 w%LabelWidth% h168 Background%BgLight%, 0
+  Gui, Color, %BgDark%
 
-  Gui, Add, Text,   xm           y+10 w%LabelWidth%  %LabelStyle% vLabelFileSave, Output File:
-  Gui, Add, Button, x+%eSpacing% ys-5 w90 			    vButtonFileSave gSaveAs, &Save As...
-  Gui, Add, Edit,   x+%eSpacing% ys-4 w250 					hWndhEdit2 vEditFileSave,
+  Gui, Add, Text,   xm           ym+%LineSp% w%LabelWidth% %LabelStyle%, Source
+  Gui, Add, Button, x+%eSpacing% ys-5        w90 	         gOpen, &Open
+  Gui, Add, Edit,   x+%eSpacing% ys-4        w250          hWndhEdit1 vEditFileOpen,
 
-  Gui, Add, Text, xm           y+10 w%LabelWidth% %LabelStyle% vLabelFileExt +Disabled, Output Name Ext.:
-  Gui, Add, Edit, x+%eSpacing% ys-5 w200          hWndhEdit3 vEditFileExt gEditFileExtChange +Disabled
-  Gui, Add, Text, x+%eSpacing% ys   w40				 	  hWndhStatic13 vLabelPreview +Disabled, Preview:
-  Gui, Add, Edit, x+%eSpacing% ys-5 w92  				  hWndhEdit4 vEditPreview +Disabled +ReadOnly,
+  Gui, Add, Text,   xm           y+%LineSp%  w%LabelWidth% %LabelStyle% vLabelFileSave, Output File
+  Gui, Add, Button, x+%eSpacing% ys-5        w90           vButtonFileSave gSaveAs,        &Save As...
+  Gui, Add, Edit,   x+%eSpacing% ys-4        w250          hWndhEdit2 vEditFileSave,
+
+  Gui, Add, Text, xm           y+%LineSp%  w%LabelWidth% %LabelStyle%    vLabelFileExt +Disabled, Output Name Ext.
+  Gui, Add, Edit, x+%eSpacing% ys-5        w200          hWndhEdit3      vEditFileExt  gEditFileExtChange +Disabled
+  Gui, Add, Text, x+%eSpacing% ys          w40           hWndhStatic13   vLabelPreview +Disabled, Preview:
+  Gui, Add, Edit, x+%eSpacing% ys-5        w92           hWndhEdit4      vEditPreview  +Disabled +ReadOnly,
 
   Gui, Add, Text, %eSeparator% hWndhStatic10
 
-  Gui, Add, Text,   xm           y+10 w%LabelWidth%  %LabelStyle%, Noise Reduction:
-  Gui, Add, Slider, x+%eSpacing% ys-5 w300           hWndhmsctls_trackbar321 vSliderNoise gSliderNoiseChange +Tooltip TickInterval1 Range0-3, 0
-  Gui, Add, Edit,   x+%eSpacing% ys-5 w20            hWndhEdit5 vEditNoise x419 y97 w31 h21 +Disabled +ReadOnly Center, 0
+  Gui, Add, Text,   xm           y+10 w%LabelWidth%  %LabelStyle%, Noise Reduction
+  Gui, Add, Slider, x+%eSpacing% ys-5 w298           hWndhmsctls_trackbar321 vSliderNoise gSliderNoiseChange +Tooltip TickInterval1 Range0-3, 0
+  Gui, Add, Edit,   x+%eSpacing% ys-5 w40            hWndhEdit5 vEditNoise +Disabled +ReadOnly Center, 0
 
-  Gui, Add, Text,   xm           y+15 w%LabelWidth% %LabelStyle%, Image Scaling:
-  Gui, Add, Edit,   x+%eSpacing% ys-5 w340          hWndhEdit6 vEditScale gEditScaleChange, 2
-  Gui, Add, UpDown, x+%eSpacing% ys-5 w20           hWndhmsctls_updown321 vCounterScale +0x80, 2
+  Gui, Add, Text,   xm           y+15 w%LabelWidth% %LabelStyle%, Image Scaling
+  Gui, Add, Edit,   x+%eSpacing% ys-5 w342          hWndhEdit6 vEditScale gEditScaleChange, 2
+  Gui, Add, UpDown, x+%eSpacing% ys-5 w10           hWndhmsctls_updown321 vCounterScale +0x80, 2
 
   Gui, Add, Text, %eSeparator% hWndhStatic16
 
-  Gui, Add, Button,   xm           y+10 w100 section gProcess, STA&RT
-  Gui, Add, Progress, x+%eSpacing% ys+1 w230 h21 hWndhmsctls_progress321 vProgressBar -Smooth Range0-1, 0
-  Gui, Add, Button,   x+%eSpacing% ys   w100 hWndhButton4 vButtonResult gOpenResult Disabled, Open Result
+  Gui, Add, Button,   xm           yp+10 w100 section gProcess, STA&RT
+  Gui, Add, Progress, x+24         ys+1  w238 h21 hWndhmsctls_progress321 vProgressBar -Smooth Range0-1, 0
+  Gui, Add, Button,   x+%eSpacing% ys    w100 hWndhButton4 vButtonResult gOpenResult +Disabled, Open Result
 
-  Gui Show,, Waifu2x
-  Gui, +MinSize400x200 +MaxSize9999x200
-  IniRead, WWIDTH, %SETTINGSSOURCE%, settings, width, 455
-  Gui Show, w%WWIDTH%
+  Gui, Show, w%WWIDTH% h%WHEIGHT%, Waifu2x
+  Gui, +MinSize%WWIDTH%x%WHEIGHT% +MaxSize9999x%WHEIGHT%
+  IniRead, WWIDTH, %SETTINGSSOURCE%, settings, width, %WWIDTH%
+  Gui, Show, w%WWIDTH%
 
   GuiControl,, EditScale, %ScaleValue%
   GuiControl,, SliderNoise, %NoiseValue%
@@ -126,13 +135,12 @@ InputFileList(ByRef OutputVar, InputFiles, Extension) {
 
     GuiControl, Text, EditFileOpen, %InputFilePath%
     GuiControl, Text, EditFileSave, %OutputFilePath%
+    GuiControl, Text, LabelFileSave,  Output File
+    GuiControl, Text, ButtonFileSave, Save As...
     GuiControl, Text, EditFileExt,
     GuiControl, Text, EditPreview,
 
     GuiControl, -ReadOnly, EditFileOpen
-    GuiControl, Enable, LabelFileSave
-    GuiControl, Enable, ButtonFileSave
-    GuiControl, Enable, EditFileSave
 
     GuiControl, Disable, LabelFileExt
     GuiControl, Disable, EditFileExt
@@ -144,14 +152,13 @@ InputFileList(ByRef OutputVar, InputFiles, Extension) {
   else {
     OutputVar := InputFiles
     InputFilePath := StrReplace(InputFiles, "`n", ", ")
-    GuiControl, Text, EditFileOpen, %InputFilePath%
-    GuiControl, Text, EditFileSave, %OutputFilePath%
-    GuiControl, Text, EditFileExt, %Extension%
+    GuiControl, Text, EditFileOpen,   %InputFilePath%
+    GuiControl, Text, EditFileSave,   %OutputFilePath%
+    GuiControl, Text, EditFileExt,    %Extension%
+    GuiControl, Text, LabelFileSave,  Output Path
+    GuiControl, Text, ButtonFileSave, Save To...
 
     GuiControl, +ReadOnly, EditFileOpen
-    GuiControl, Disable, LabelFileSave
-    GuiControl, Disable, ButtonFileSave
-    GuiControl, Disable, EditFileSave
 
     GuiControl, Enable, LabelFileExt
     GuiControl, Enable, EditFileExt
@@ -374,6 +381,14 @@ SelectExtension:
   IniWrite, %DEFAULTEXT%, %SETTINGSSOURCE%, settings, extension
 return
 
+SelectCommand:
+  InputBox, cmd, Enter Commands, Enter any extra command line options you would like to run when executing:,,,150,,,,,%COMMANDS%
+  if ( ErrorLevel ) {
+    return
+  }
+  COMMANDS := cmd
+  IniWrite, %COMMANDS%, %SETTINGSSOURCE%, settings, commands
+return
 
 SliderNoiseChange:
   GuiControl, Text, EditNoise, %SliderNoise%
