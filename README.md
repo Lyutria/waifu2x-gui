@@ -5,13 +5,12 @@ This is a AutoHotKey script to run a front-end for [waifu2x-cpp-converter](https
 You can find pre-packaged release .zips in the releases folder which already contain a prebuilt version of waifu2x-converter-cpp. This is usually the most recent version at time of release taken from the other project's releases.
 
 ## NVIDIA CARD WARNING
-The prebuilt version of waifu2x-converter-cpp is made for _AMD_ graphics cards, in order to use it for your system you'll have to select a different processor
-
+The prebuilt version of waifu2x-converter-cpp is made for *AMD* graphics cards, in order to use it for your system you'll have to select a different processor
 From the command line:
 ```
 waifu-converter-cpp.exe --list-processor
 ```
-Pick the number from the list that has `(OpenCL)`, and then in the GUI, select _Settings > Command Line Options_ and enter:
+Pick the number from the list that has `(OpenCL)`, and then in the GUI, select *Settings, Command Line Options* and enter:
 ```
 --processor #
 ```
@@ -43,4 +42,4 @@ Run the AutoHotKey2exe compiler:
 # Command Line
 You can pass a single or list of files to a compiled version of the GUI to open it. If you'd like processing or control over it I would recommend using the command line options on [waifu2x-cpp-converter](https://github.com/DeadSix27/waifu2x-converter-cpp).
 
-If you have command line options you need to apply to it, you can use the option in the _Settings_ menu to write extra options for each run.
+If you have command line options you need to apply to it, you can use the option in the *Settings* menu to write extra options for each run.

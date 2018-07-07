@@ -1,4 +1,4 @@
-﻿#NoEnv
+#NoEnv
 #NoTrayIcon
 #SingleInstance off
 SetWorkingDir %A_ScriptDir%
@@ -7,7 +7,7 @@ SetWorkingDir %A_ScriptDir%
 ; Create a default icon
 if ( Not A_IconFile and Not A_IsCompiled ) {
   IconPath = %A_ScriptDir%\compile.ico
-  If ( FileExist(IconPath) ) {
+  if ( FileExist(IconPath) ) {
     Menu, Tray, Icon, %IconPath%
   }
 }
@@ -23,7 +23,7 @@ SOURCEFILES  =
 OUTPUT       =
 FILEMODE    := 1
 
-If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
+if (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
   ; Check if there's a local directory for compiled versions
   if (FileExist(A_ScriptDir . "\waifu2x-converter-cpp\waifu2x-converter-cpp.exe")) {
     COMPILERSOURCE := A_ScriptDir . "\waifu2x-converter-cpp\waifu2x-converter-cpp.exe"
@@ -35,7 +35,7 @@ If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="
   }
 }
 
-If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
+if (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
   MsgBox,, Waifu2x, No compiler was selected, the program will exit.
   ExitApp
 }
@@ -93,7 +93,7 @@ Gui, +Resize
   Gui, Add, Text, %eSeparator% hWndhStatic16
 
   Gui, Add, Button,   xm           yp+%LineSp% w100 section gProcess, STA&RT
-  Gui, Add, Progress, x+24         ys+1        w244 h21 hWndhmsctls_progress321 vProgressBar -Smooth Range0-1, 0
+  Gui, Add, Progress, x+%eSpacing% ys+1        w257 h21 hWndhmsctls_progress321 vProgressBar -Smooth Range0-1, 0
   Gui, Add, Button,   x+%eSpacing% ys          w100 hWndhButton4 vButtonResult gOpenResult +Disabled, Open Result
 
   Gui, Show, w%WWIDTH% h%WHEIGHT%, Waifu2x
@@ -105,12 +105,12 @@ Gui, +Resize
   GuiControl,, SliderNoise, %NoiseValue%
   GuiControl,, EditNoise, %NoiseValue%
 
-  If (A_Args.Length()) {
-    If (A_Args.Length() == 1) {
+  if (A_Args.Length()) {
+    if (A_Args.Length() == 1) {
       InputFile := A_Args[1]
       FILEMODE := InputSingle(SOURCEFILES, InputFile, DEFAULTEXT)
     }
-    Else {
+    else {
       for n, FileArg in A_Args  ; For each parameter:
       {
         SplitPath, FileArg, DropFileName, DropFileDir
@@ -122,7 +122,6 @@ Gui, +Resize
     }
   }
 return
-
 
 InputFileList(ByRef OutputVar, InputFiles, Extension) {
   FileList := StrSplit(InputFiles, "`n")
@@ -317,7 +316,7 @@ Process:
   ScaleValue := EditScale
   NoiseValue := EditNoise
 
-  If (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
+  if (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="") {
     MsgBox,,Error, No compiler selected. Please select one under settings.
     return
   }
