@@ -1,4 +1,4 @@
-﻿#NoEnv
+#NoEnv
 #NoTrayIcon
 #SingleInstance off
 SetWorkingDir %A_ScriptDir%
@@ -93,7 +93,7 @@ Gui, +Resize
   Gui, Add, Text, %eSeparator% hWndhStatic16
 
   Gui, Add, Button,   xm           yp+%LineSp% w100 section gProcess, STA&RT
-  Gui, Add, Progress, x+24         ys+1        w244 h21 hWndhmsctls_progress321 vProgressBar -Smooth Range0-1, 0
+  Gui, Add, Progress, x+%eSpacing% ys+1        w257 h21 hWndhmsctls_progress321 vProgressBar -Smooth Range0-1, 0
   Gui, Add, Button,   x+%eSpacing% ys          w100 hWndhButton4 vButtonResult gOpenResult +Disabled, Open Result
 
   Gui, Show, w%WWIDTH% h%WHEIGHT%, Waifu2x
@@ -122,7 +122,6 @@ Gui, +Resize
     }
   }
 return
-
 
 InputFileList(ByRef OutputVar, InputFiles, Extension) {
   FileList := StrSplit(InputFiles, "`n")
