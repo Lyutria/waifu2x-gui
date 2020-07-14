@@ -18,7 +18,7 @@ IniRead, NoiseValue, %SETTINGSSOURCE%, settings, noise, 0
 IniRead, ScaleValue, %SETTINGSSOURCE%, settings, scale, 2
 IniRead, DEFAULTEXT, %SETTINGSSOURCE%, settings, extension, _x<scale>_n<noise>
 IniRead, COMMANDS,   %SETTINGSSOURCE%, settings, commands, %A_Space%
-VERSION     := "1.0.1 dev"
+VERSION     := "1.0"
 SOURCEFILES  =
 OUTPUT       =
 FILEMODE    := 1
@@ -30,8 +30,17 @@ if (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="
     IniWrite, %COMPILERSOURCE%, %SETTINGSSOURCE%, settings, compiler
   }
   else {
-    MsgBox,, Waifu2x, No compiler has been selected yet, please select the waifu2x-converter-cpp.exe
+    MsgBox, 4, Waifu2x, No compiler has been selected yet, do you want to open a link to downloads in your browser?
+    IfMsgBox, No
+    {
+      MsgBox,, Waifu2x, Please find and open the waifu2x-converter-cpp.exe
+      Gosub, SelectCompiler
+      return
+    }
+    Run, https://github.com/DeadSix27/waifu2x-converter-cpp/releases
+    MsgBox,, Waifu2x, Please find and open the waifu2x-converter-cpp.exe
     Gosub, SelectCompiler
+    return
   }
 }
 
@@ -42,7 +51,7 @@ if (FileExist(COMPILERSOURCE) == 0 or COMPILERSOURCE=="C:\" or COMPILERSOURCE=="
 
 Gui, +Resize
   Gui, Font, s8, Segoe UI
-  Menu, SettingsMenu, Add, Select &Compiler, SelectCompiler
+  Menu, SettingsMenu, Add, Select &Compiler EXE, SelectCompiler
   Menu, SettingsMenu, Add, Command &Line Options, SelectCommand
   Menu, SettingsMenu, Add, Default &Extension, SelectExtension
   Menu, SettingsMenu, Add
@@ -399,7 +408,6 @@ return
 OpenResult:
   Run, "%Output%"
 return
-
 
 SelectCompiler:
   FileSelectFile, InputEXE, 1, %COMPILERSOURCE%, Select WAIFU2X Compiler, Executables (*.exe)

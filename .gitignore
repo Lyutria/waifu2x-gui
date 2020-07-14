@@ -1,3 +1,4 @@
 *.ini
 releases/
 bin/
+waifu2x-converter-cpp/
